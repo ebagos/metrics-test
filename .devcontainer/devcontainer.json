@@ -1,0 +1,11 @@
+{
+    "name": "Getting Commit History",
+    "image": "mcr.microsoft.com/vscode/devcontainers/go",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go"
+            ]
+        }
+    }   
+}
