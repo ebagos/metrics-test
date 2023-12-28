@@ -43,10 +43,11 @@ jobs:
       run: echo "${{ steps.issue-metrics.outputs.metrics }}"
 
     - name: send json to packages
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-to-release@v1
       with:
         name: issue_metrics
         path: ./issue_metrics.json
+        repo-token: ${{ secret.GITHUB_TOKEN }}
         
     #- name: Create issue for opend issues and prs
     #  uses: peter-evans/create-issue-from-file@v4
