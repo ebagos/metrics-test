@@ -42,13 +42,11 @@ jobs:
     - name: Print output of issue metrics tool
       run: echo "${{ steps.issue-metrics.outputs.metrics }}"
 
-    - name: Upload Release Asset
-      id: upload-release-asset 
-      uses: Shopify/upload-to-release@v1
+    - name: Upload Release
+      uses: actions/upload-artifact@v4
       with:
-        path: ./issue_metrics.json
         name: issue-metrics
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        path: ./issue_metrics.json
 
     #- name: Create issue for opend issues and prs
     #  uses: peter-evans/create-issue-from-file@v4
