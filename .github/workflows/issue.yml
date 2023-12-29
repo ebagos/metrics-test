@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Run issue-metrics tool for issues and prs opened in a specific period
+    - name: Run issue-metrics tool for issues opened in a specific period
       id: issue-metrics
       uses: github/issue-metrics@v2
       env:
@@ -54,7 +54,7 @@ jobs:
         title: 'Monthly issue metrics'
         content-filepath: ./issue_metrics.md
 
-    - name: Run issue-metrics tool for issues and prs opened in a specific period
+    - name: Run issue-metrics tool for prs opened in a specific period
       id: pr-metrics
       uses: github/issue-metrics@v2
       env:
