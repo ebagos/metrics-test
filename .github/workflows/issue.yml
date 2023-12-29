@@ -61,7 +61,7 @@ jobs:
         GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
         SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr created:${{ github.event.inputs.from }}..${{ github.event.inputs.to }}'
   
-      - name: checkout
+    - name: checkout
       uses: actions/checkout@v4
       with:
         token: ${{ secrets.MY_ACCESS_TOKEN }}
