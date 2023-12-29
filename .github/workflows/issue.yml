@@ -67,6 +67,19 @@ jobs:
         title: 'Monthly pr metrics'
         content-filepath: ./issue_metrics.md
         
+    - name: Run issue-metrics tool for prs opened in a specific period
+      id: issue-metrics-without-any-period
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+        SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:issue'
+  
+    - name: Create issue for opend issues and prs
+      uses: peter-evans/create-issue-from-file@v4
+      with:
+        title: 'Monthly pr metrics'
+        content-filepath: ./issue_metrics.md
+
     - name: checkout
       uses: actions/checkout@v4
       with:
