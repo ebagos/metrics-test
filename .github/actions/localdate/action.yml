@@ -23,10 +23,10 @@ inputs:
 outputs:
   first:
     description: 'first day of month or week'
-    #value: ${{ steps.localdate.outputs.first }}
+    value: ${{ steps.localdate.outputs.first }}
   last:
     description: 'last day of month or week'
-    #value: ${{ steps.localdate.outputs.last }}
+    value: ${{ steps.localdate.outputs.last }}
 runs:
   using: 'docker'
   image: 'Dockerfile'
