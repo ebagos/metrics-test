@@ -1,6 +1,6 @@
 module commits
 
-go 1.21.1
+go 1.21.5
 
 require (
 	github.com/google/go-github/v57 v57.0.0

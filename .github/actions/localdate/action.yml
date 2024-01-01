@@ -1,0 +1,25 @@
+# /actions/commits/action.yml
+
+name: 'local date Action'
+description: 'Get the previous month or week from UTC'
+author: 'im-soga'
+inputs:
+  utc:
+    description: 'UTC'
+    required: true
+    default: ''
+  type:
+    description: 'type of output(month or week)'
+    required: true
+    default: ''
+  timezone:
+    description: 'timezone'
+    required: true
+    default: ''
+  weekday:
+    description: 'weekday'
+    required: false
+    default: ''
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

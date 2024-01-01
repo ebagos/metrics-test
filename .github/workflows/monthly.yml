@@ -1,0 +1,107 @@
+name: Monthly issue metrics
+on:
+  workflow_dispatch:
+    inputs:
+        repo:
+            description: 'Repository name'
+            required: true
+            default: 'im-dev-cnts'
+        owner:
+            description: 'Repository owner'
+            required: true
+            default: 'b2bplatform'
+  schedule:
+    - cron: '3 2 1 * *' # 1st day of month 2:03am UTC
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  build:
+    name: issue metrics
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.MY_ACCESS_TOKEN }}
+
+      - name: Get previous month
+        id: monthly
+        uses: ./.github/actions/localdate
+        with:
+          UTC: $(date +'%Y-%m-%d %H:%M:%S')
+          TYPE: 'month'
+          TIMEZONE: 'Asia/Tokyo'
+
+      - name: get commit infos
+        uses: ./.github/actions/commits
+        with:
+          ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          REPO_OWNER: ${{ github.event.inputs.owner }}
+          REPO_NAME: ${{ github.event.inputs.repo }}
+  
+      - name: Run issue-metrics tool for issues opened in a specific period
+        id: issue-metrics-created
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:issue created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+
+      # JSON output
+      #- name: Print output of issue metrics tool
+      #  run: echo "${{ steps.issue-metrics-created.outputs.metrics }}"
+
+      #- name: Upload Release
+      #  uses: actions/upload-artifact@v4
+      #  with:
+      #    name: issue-metrics
+      #    path: ./issue_metrics.json
+
+      - name: Create issue for opend issues and prs
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: 'Monthly issue metrics - created'
+          content-filepath: ./issue_metrics.md
+
+      - name: Run issue-metrics tool for prs opened in a specific period
+        id: pr-metrics-created
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+
+      - name: Create issue for opend issues and prs
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: 'Monthly pr metrics created'
+          content-filepath: ./issue_metrics.md
+
+      - name: Run issue-metrics tool for issues closed in a specific period
+        id: issue-metrics-closed
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:issue closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
+  
+      - name: Create issue for opend issues and prs
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: 'Monthly pr metrics created'
+          content-filepath: ./issue_metrics.md
+
+      - name: Run issue-metrics tool for issues closed in a specific period
+        id: pr-metrics-closed
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
+    
+      - name: Create issue for opend issues and prs
+        uses: peter-evans/create-issue-from-file@v4
+        with:
+          title: 'Monthly pr metrics closed'
+          content-filepath: ./issue_metrics.md
+  
