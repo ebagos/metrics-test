@@ -64,11 +64,11 @@ func main() {
 	seenCommits := make(map[string]bool)
 	output := []Output{}
 
-	since, err := time.Parse("2006-01-02 03:04:05", fromDate+" 00:00:00")
+	since, err := time.Parse("2006-01-02 15:04:05", fromDate+" 00:00:00")
 	if err != nil {
 		log.Fatal("fromDate parse:", err)
 	}
-	until, err := time.Parse("2006-01-02 03:04:05", toDate+" 23:59:59")
+	until, err := time.Parse("2006-01-02 15:04:05", toDate+" 23:59:59")
 	if err != nil {
 		log.Fatal("toDate parse:", err)
 	}
