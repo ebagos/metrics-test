@@ -25,7 +25,8 @@ jobs:
         env: 
           TZ: "UTC" # タイムゾーンを指定
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
+        #run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
+        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
       # '%Y-%m-%d %H:%M'の部分を書き換えれば、任意の表示に変更できる。
 
       - name: Get previous week
@@ -43,8 +44,8 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           FROM_DATE: ${{ steps.weekly.outputs.first }}
           TO_DATE: ${{ steps.weekly.outputs.last }}
-          REPO_OWNER: ${{ github.event.inputs.owner }}
-          REPO_NAME: ${{ github.event.inputs.repo }}
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
