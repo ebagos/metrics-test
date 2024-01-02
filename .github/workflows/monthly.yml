@@ -46,15 +46,15 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           FROM_DATE: ${{ steps.monthly.outputs.first }}
           TO_DATE: ${{ steps.monthly.outputs.last }}
-          REPO_OWNER: ${{ github.event.inputs.owner }}
-          REPO_NAME: ${{ github.event.inputs.repo }}
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:issue created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
 
       # JSON output
       #- name: Print output of issue metrics tool
@@ -77,7 +77,7 @@ jobs:
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
 
       - name: Create issue for opend issues and prs
         uses: peter-evans/create-issue-from-file@v4
@@ -90,7 +90,7 @@ jobs:
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:issue closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
   
       - name: Create issue for opend issues and prs
         uses: peter-evans/create-issue-from-file@v4
@@ -103,7 +103,7 @@ jobs:
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
     
       - name: Create issue for closed prs
         uses: peter-evans/create-issue-from-file@v4
