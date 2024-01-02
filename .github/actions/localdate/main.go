@@ -4,18 +4,12 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"time"
 )
-
-type Output struct {
-	First string `json:"first"`
-	Last  string `json:"last"`
-}
 
 // 引数はtype=month/type=week utc=2019-01-01 00:00:00のように指定する
 func main() {
@@ -44,26 +38,30 @@ func main() {
 	}
 	if tp == "month" {
 		first, last := getPrevMonth(localtime, location)
-		out := Output{
-			First: first.Format("2006-01-02"),
-			Last:  last.Format("2006-01-02"),
-		}
-		jsonOut, err := json.Marshal(out)
+		firstStr := "first=" + first.Format("2006-01-02")
+		lastStr := "last=" + last.Format("2006-01-02")
+		current := os.Getenv("GITHUB_OUTPUT")
+		file, err := os.OpenFile(current, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(string(jsonOut))
+		defer file.Close()
+		fmt.Println("week!!!!!!!!!!!!!!!!!!!=", current)
+		fmt.Fprintln(file, firstStr)
+		fmt.Fprintln(file, lastStr)
 	} else if tp == "week" {
 		first, last := getPrevWeek(localtime, location, sw)
-		out := Output{
-			First: first.Format("2006-01-02"),
-			Last:  last.Format("2006-01-02"),
-		}
-		jsonOut, err := json.Marshal(out)
+		firstStr := "first=" + first.Format("2006-01-02")
+		lastStr := "last=" + last.Format("2006-01-02")
+		current := os.Getenv("GITHUB_OUTPUT")
+		file, err := os.OpenFile(current, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(string(jsonOut))
+		defer file.Close()
+		fmt.Println("week!!!!!!!!!!!!!!!!!!!=", current)
+		fmt.Fprintln(file, firstStr)
+		fmt.Fprintln(file, lastStr)
 	} else {
 		log.Fatal("invalid argument(type)")
 		os.Exit(1)
