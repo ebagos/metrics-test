@@ -38,6 +38,9 @@ jobs:
           WEEKDAY: '0'
           TIMEZONE: 'Asia/Tokyo'
 
+      - name: Output from date
+        run: echo "${{ steps.weekly.outputs.first }}"
+
       - name: get commit infos
         uses: ./.github/actions/commits
         env:
