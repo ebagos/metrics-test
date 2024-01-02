@@ -1,45 +1,50 @@
 name: Monthly issue metrics
 on:
   workflow_dispatch:
-    inputs:
-        repo:
-            description: 'Repository name'
-            required: true
-            default: 'im-dev-cnts'
-        owner:
-            description: 'Repository owner'
-            required: true
-            default: 'b2bplatform'
   schedule:
-    - cron: '3 2 1 * *' # 1st day of month 2:03am UTC
+    - cron: '3 2 1 * *' # 1st day of a month 2:03am UTC
 
 permissions:
   issues: write
   pull-requests: read
 
 jobs:
-  build:
-    name: issue metrics
+  metrics_matrix:
+    strategy:
+      matrix:
+        repo: ['metrics-test']
+        owner: ['ebagos']
     runs-on: ubuntu-latest
-
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
 
+      - name: Get current date and time
+        env: 
+          TZ: "UTC" # タイムゾーンを指定
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
+      # '%Y-%m-%d %H:%M'の部分を書き換えれば、任意の表示に変更できる。
+  
+      - name: Show date and time
+        run: echo ${{ steps.date.outputs.date }} # 2022-01-03 10:42
+
       - name: Get previous month
         id: monthly
         uses: ./.github/actions/localdate
-        with:
-          UTC: $(date +'%Y-%m-%d %H:%M:%S')
+        env:
           TYPE: 'month'
+          UTC: ${{ steps.date.outputs.date }}
           TIMEZONE: 'Asia/Tokyo'
 
       - name: get commit infos
         uses: ./.github/actions/commits
-        with:
+        env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          FROM_DATE: ${{ steps.monthly.outputs.first }}
+          TO_DATE: ${{ steps.monthly.outputs.last }}
           REPO_OWNER: ${{ github.event.inputs.owner }}
           REPO_NAME: ${{ github.event.inputs.repo }}
   
@@ -60,7 +65,7 @@ jobs:
       #    name: issue-metrics
       #    path: ./issue_metrics.json
 
-      - name: Create issue for opend issues and prs
+      - name: Create issue for opened issues
         uses: peter-evans/create-issue-from-file@v4
         with:
           title: 'Monthly issue metrics - created'
@@ -89,7 +94,7 @@ jobs:
       - name: Create issue for opend issues and prs
         uses: peter-evans/create-issue-from-file@v4
         with:
-          title: 'Monthly pr metrics created'
+          title: 'Monthly issue metrics closed'
           content-filepath: ./issue_metrics.md
 
       - name: Run issue-metrics tool for issues closed in a specific period
@@ -99,7 +104,7 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ github.event.inputs.owner }}/${{ github.event.inputs.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
     
-      - name: Create issue for opend issues and prs
+      - name: Create issue for closed prs
         uses: peter-evans/create-issue-from-file@v4
         with:
           title: 'Monthly pr metrics closed'

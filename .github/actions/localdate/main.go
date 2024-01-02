@@ -5,10 +5,10 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -19,30 +19,30 @@ type Output struct {
 
 // 引数はtype=month/type=week utc=2019-01-01 00:00:00のように指定する
 func main() {
-	tp := flag.String("INPUT_TYPE", "", "type of date: month or week")
-	ut := flag.String("INPUT_UTC", "", "utc date: 2019-01-01")
-	sw := flag.Int("INPUT_WEEKDAY", 0, "start weekday: 0-6")
-	tz := flag.String("INPUT_TIMEZONE", "", "timezone: Asia/Tokyo")
-	flag.Parse()
-	if *tp == "" {
+	tp := os.Getenv("TYPE")
+	ut := os.Getenv("UTC")
+	tmp := os.Getenv("WEEKDAY")
+	sw, _ := strconv.Atoi(tmp)
+	tz := os.Getenv("TIMEZONE")
+	if tp == "" {
 		log.Fatal("type is required")
 	}
-	if *ut == "" {
+	if ut == "" {
 		log.Fatal("utc is required")
 	}
-	if *tz == "" {
+	if tz == "" {
 		log.Fatal("timezone is required")
 	}
 
-	location, err := time.LoadLocation(*tz)
+	location, err := time.LoadLocation(tz)
 	if err != nil {
 		log.Fatal(err)
 	}
-	localtime, err := parseDate(ut, location)
+	localtime, err := parseDate(&ut, location)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if *tp == "month" {
+	if tp == "month" {
 		first, last := getPrevMonth(localtime, location)
 		out := Output{
 			First: first.Format("2006-01-02"),
@@ -53,8 +53,8 @@ func main() {
 			log.Fatal(err)
 		}
 		fmt.Println(string(jsonOut))
-	} else if *tp == "week" {
-		first, last := getPrevWeek(localtime, location, *sw)
+	} else if tp == "week" {
+		first, last := getPrevWeek(localtime, location, sw)
 		out := Output{
 			First: first.Format("2006-01-02"),
 			Last:  last.Format("2006-01-02"),
@@ -76,7 +76,6 @@ func parseDate(date *string, location *time.Location) (time.Time, error) {
 		return time.Time{}, err
 	}
 	t := utc.In(location)
-	fmt.Println("location:", location)
 	return t, nil
 }
 
