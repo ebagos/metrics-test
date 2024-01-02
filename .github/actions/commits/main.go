@@ -45,7 +45,7 @@ func main() {
 		log.Fatal("Error loading REPO_NAME")
 	}
 
-	fmt.Println(token, fromDate, toDate, owner, repo)
+	fmt.Println(fromDate, toDate, owner, repo)
 
 	ctx := context.Background()
 	//	client := github.NewClient(nil)
@@ -68,7 +68,7 @@ func main() {
 	if err != nil {
 		log.Fatal("fromDate parse:", err)
 	}
-	until, err := time.Parse("2006-01-02 03:04:05", toDate+"23:59:59")
+	until, err := time.Parse("2006-01-02 03:04:05", toDate+" 23:59:59")
 	if err != nil {
 		log.Fatal("toDate parse:", err)
 	}
