@@ -61,11 +61,11 @@ jobs:
       #- name: Print output of issue metrics tool
       #  run: echo "${{ steps.issue-metrics-created.outputs.metrics }}"
 
-      #- name: Upload Release
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: issue-metrics
-      #    path: ./issue_metrics.json
+      - name: Upload Release
+        uses: actions/upload-artifact@v4
+        with:
+          name: issue-metrics
+          path: ./issue_metrics.md
 
       - name: Create issue for created issues
         uses: peter-evans/create-issue-from-file@v4
