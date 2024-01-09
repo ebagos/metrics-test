@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
+          repository: ebagos/metrics-test
 
       - name: Get current date and time
         env: 
@@ -38,17 +39,28 @@ jobs:
           WEEKDAY: '0'
           TIMEZONE: 'Asia/Tokyo'
 
-      - name: Output from date
+      - name: Output from date test
         run: echo "${{ steps.weekly.outputs.first }}"
 
-      - name: get commit infos
-        uses: ./.github/actions/commits
+      - name: create notion entry
+        uses: ./.github/actions/entry
+        id: entry
+        env:
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: 3d1e60c6207241b09c1aae48750f0833
+          TITLE: '${{ matrix.repo }} weekly metrics'
+
+      - name: make commit page
+        uses: ./.github/actions/commit
         env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
           FROM_DATE: ${{ steps.weekly.outputs.first }}
           TO_DATE: ${{ steps.weekly.outputs.last }}
           REPO_OWNER: ${{ matrix.owner }}
           REPO_NAME: ${{ matrix.repo }}
+          TITLE: '${{ matrix.repo }} weekly commits'
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
@@ -57,57 +69,65 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
-      # JSON output
-      #- name: Print output of issue metrics tool
-      #  run: echo "${{ steps.issue-metrics-created.outputs.metrics }}"
-
-      - name: Upload Release
-        uses: actions/upload-artifact@v4
-        with:
-          name: issue-metrics
-          path: ./issue_metrics.md
-
-      - name: Create issue for created issues
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Weekly issue metrics - opened issues'
-          content-filepath: ./issue_metrics.md
+      - name: markdown to notion - 1
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          PAGE_TITLE: '${{ matrix.repo }}: issue created'
+          TAGS: issue,created
 
       - name: Run issue-metrics tool for prs opened in a specific period
-        id: pr-metrics-created
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
-      - name: Create issue for opend prs
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Weekly pr metrics created'
-          content-filepath: ./issue_metrics.md
-
-      - name: Run issue-metrics tool for issues closed in a specific period
-        id: issue-metrics-closed
-        uses: github/issue-metrics@v2
+      - name: markdown to notion - 2
+        uses: ./.github/actions/notion
         env:
-          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.first }}'
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          PAGE_TITLE: '${{ matrix.repo }}: pr created'
+          TAGS: pr,created
   
-      - name: Create issue for closed issues
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Weekly pr metrics created'
-          content-filepath: ./issue_metrics.md
-
-      - name: Run issue-metrics tool for issues closed in a specific period
-        id: pr-metrics-closed
+      - name: Run issue-metrics tool for prs opened in a specific period
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.first }}'
-    
-      - name: Create issue for closed prs
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Weekly pr metrics closed'
-          content-filepath: ./issue_metrics.md
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
+
+      - name: markdown to notion - 3
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          PAGE_TITLE: '${{ matrix.repo }}: issue closed'
+          TAGS: issue,closed
+  
+      - name: Run issue-metrics tool for prs opened in a specific period
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
+  
+      - name: markdown to notion - 4
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          PAGE_TITLE: '${{ matrix.repo }}: pr closed'
+          TAGS: pr,closed
+  
