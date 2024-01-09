@@ -1,15 +1,36 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
-    "name": "Getting Commit History",
-    "image": "mcr.microsoft.com/vscode/devcontainers/go",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "golang.go",
-                "github.vscode-github-actions",
-                "ms-azuretools.vscode-docker",
-                "github.copilot",
-                "github.copilot-chat"
-            ]
-        }
-    }   
-}
+	"name": "Debian",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"version": "20.10",
+			"dockerDashComposeVersion": "v2"
+		},
+		"ghcr.io/devcontainers/features/go:1": {
+			"version": "1.21"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts",
+			"nvmVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"version": "3.10"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"github.copilot",
+				"github.copilot-chat",
+				"golang.go",
+				"ms-python.python",
+				"dbaeumer.vscode-eslint"
+			]
+		}
+	}
+nstall }

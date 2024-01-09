@@ -1,0 +1,25 @@
+{
+    "name": "Getting Simple Metrics",
+    "image": "mcr.microsoft.com/devcontainers/base:dev-bookworm",
+    "features": {
+        "ghcr.io/devcontainers/features/go:1": {},
+        "ghcr.io/devcontainers/features/ts-node:1": {
+            "version": "20"
+        },
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "3.10"
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go",
+                "github.vscode-github-actions",
+                "ms-azuretools.vscode-docker",
+                "github.copilot",
+                "github.copilot-chat"
+            ]
+        }
+    }   
+}

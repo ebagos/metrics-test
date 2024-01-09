@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/google/go-github/v57/github"
 	"github.com/joho/godotenv"
+	"github.com/tobgu/qframe"
+	"github.com/tobgu/qframe/config/groupby"
 	"golang.org/x/oauth2"
 )
 
@@ -86,7 +89,7 @@ func main() {
 
 		fmt.Println(branch.GetName())
 		for _, commit := range commits {
-			printCommitInfo(commit)
+			//			printCommitInfo(commit)
 			commitSHA := commit.GetSHA()
 			if _, exists := seenCommits[commitSHA]; exists {
 				fmt.Printf("Duplicate commit SHA: %s\n", commitSHA)
@@ -112,6 +115,8 @@ func main() {
 	if err != nil {
 		log.Fatal("file write:", err)
 	}
+
+	qframeExample(string(string(json)))
 }
 
 func printCommitInfo(commit *github.RepositoryCommit) {
@@ -131,4 +136,13 @@ func setOutput(commit *github.RepositoryCommit) Output {
 		Date:    commit.GetCommit().GetAuthor().GetDate().Format("2006-01-02 15:04:05"),
 		URL:     commit.GetHTMLURL(),
 	}
+}
+
+func qframeExample(str string) {
+	fmt.Println(str)
+	fmt.Println("---------------------------")
+	qf := qframe.ReadJSON(strings.NewReader(str))
+	qf = qf.GroupBy(groupby.Columns("author"))
+	fmt.Println(qf)
+	fmt.Println(qf.Sort(qframe.Order{Column: "author", Reverse: true}))
 }

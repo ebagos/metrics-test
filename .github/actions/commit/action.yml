@@ -1,0 +1,5 @@
+name: 'commit per person'
+description: 'Create a commit per person'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
