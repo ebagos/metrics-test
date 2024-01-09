@@ -45,13 +45,11 @@ def create_db_entry():
                     "title": {}
                 },
                 "Date": {
-                    "date": {}
+                    "type": 'created_time',
+                    "created_time": {}
                 },
                 "Tags": {
                     "multi_select": {}
-                },
-                "Content": {
-                    "rich_text": {}
                 }
             }
         }

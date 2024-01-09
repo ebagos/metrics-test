@@ -9,7 +9,7 @@ const token = process.env.NOTION_KEY
 const databaseId = process.env.NOTION_DATABASE_ID
 const filename = process.env.MARKDOWN_FILENAME
 const tags = process.env.TAGS.split(',')
-const title = process.env.PAGE_TITLE
+const title = process.env.TITLE
 
 console.log(databaseId, filename, tags, title)
 
