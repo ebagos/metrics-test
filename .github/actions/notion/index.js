@@ -2,9 +2,9 @@ import { Client } from '@notionhq/client'
 import { readFileSync } from 'fs'
 import matter from 'gray-matter'
 import { markdownToBlocks } from '@tryfabric/martian'
+import { config } from 'dotenv'
 
-const core = require('@actions/core')
-require('dotenv').config()
+config()
 const token = process.env.NOTION_KEY
 const databaseId = process.env.NOTION_DATABASE_ID
 const filename = process.env.MARKDOWN_FILENAME
