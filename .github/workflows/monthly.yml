@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
+          repository: ebagos/metrics-test
 
       - name: Get current date and time
         env: 
@@ -28,11 +29,8 @@ jobs:
         #run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
         run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
       # '%Y-%m-%d %H:%M'の部分を書き換えれば、任意の表示に変更できる。
-  
-      - name: Show date and time
-        run: echo ${{ steps.date.outputs.date }} # 2022-01-03 10:42
 
-      - name: Get previous month
+      - name: Get previous week
         id: monthly
         uses: ./.github/actions/localdate
         env:
@@ -40,14 +38,28 @@ jobs:
           UTC: ${{ steps.date.outputs.date }}
           TIMEZONE: 'Asia/Tokyo'
 
-      - name: get commit infos
-        uses: ./.github/actions/commits
+      - name: Output from date test
+        run: echo "${{ steps.monthly.outputs.first }}"
+
+      - name: create notion entry
+        uses: ./.github/actions/entry
+        id: entry
+        env:
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: 3d1e60c6207241b09c1aae48750f0833
+          TITLE: '${{ matrix.repo }} montly metrics'
+
+      - name: make commit page
+        uses: ./.github/actions/commit
         env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
           FROM_DATE: ${{ steps.monthly.outputs.first }}
           TO_DATE: ${{ steps.monthly.outputs.last }}
           REPO_OWNER: ${{ matrix.owner }}
           REPO_NAME: ${{ matrix.repo }}
+          TITLE: '${{ matrix.repo }} commits'
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
@@ -56,58 +68,65 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
 
-      # JSON output
-      #- name: Print output of issue metrics tool
-      #  run: echo "${{ steps.issue-metrics-created.outputs.metrics }}"
-
-      #- name: Upload Release
-      #  uses: actions/upload-artifact@v4
-      #  with:
-      #    name: issue-metrics
-      #    path: ./issue_metrics.json
-
-      - name: Create issue for opened issues
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Monthly issue metrics - created'
-          content-filepath: ./issue_metrics.md
+      - name: markdown to notion - 1
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          TITLE: '${{ matrix.repo }}: issue created'
+          TAGS: issue,created
 
       - name: Run issue-metrics tool for prs opened in a specific period
-        id: pr-metrics-created
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr created:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
 
-      - name: Create issue for opend issues and prs
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Monthly pr metrics created'
-          content-filepath: ./issue_metrics.md
-
-      - name: Run issue-metrics tool for issues closed in a specific period
-        id: issue-metrics-closed
-        uses: github/issue-metrics@v2
+      - name: markdown to notion - 2
+        uses: ./.github/actions/notion
         env:
-          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          TITLE: '${{ matrix.repo }}: pr created'
+          TAGS: pr,created
   
-      - name: Create issue for opend issues and prs
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Monthly issue metrics closed'
-          content-filepath: ./issue_metrics.md
-
-      - name: Run issue-metrics tool for issues closed in a specific period
-        id: pr-metrics-closed
+      - name: Run issue-metrics tool for prs opened in a specific period
         uses: github/issue-metrics@v2
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.first }}'
-    
-      - name: Create issue for closed prs
-        uses: peter-evans/create-issue-from-file@v4
-        with:
-          title: 'Monthly pr metrics closed'
-          content-filepath: ./issue_metrics.md
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+
+      - name: markdown to notion - 3
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          TITLE: '${{ matrix.repo }}: issue closed'
+          TAGS: issue,closed
+  
+      - name: Run issue-metrics tool for prs opened in a specific period
+        uses: github/issue-metrics@v2
+        env:
+          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
+          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.monthly.outputs.first }}..${{ steps.monthly.outputs.last }}'
+  
+      - name: markdown to notion - 4
+        uses: ./.github/actions/notion
+        env:
+          REPO_OWNER: ${{ matrix.owner }}
+          REPO_NAME: ${{ matrix.repo }}
+          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+          MARKDOWN_FILENAME: issue_metrics.md
+          TITLE: '${{ matrix.repo }}: pr closed'
+          TAGS: pr,closed
   

@@ -60,7 +60,7 @@ jobs:
           TO_DATE: ${{ steps.weekly.outputs.last }}
           REPO_OWNER: ${{ matrix.owner }}
           REPO_NAME: ${{ matrix.repo }}
-          TITLE: '${{ matrix.repo }} weekly commits'
+          TITLE: '${{ matrix.repo }} commits'
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
