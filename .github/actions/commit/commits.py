@@ -96,7 +96,6 @@ def send_df_to_notion(df):
     new_page = client.pages.create(
         **{
             "parent": { "database_id": db_id },
-            "is_inline": True,
             "properties": {
                 "Name": {
                     "title": [
@@ -113,6 +112,7 @@ def send_df_to_notion(df):
     new_database = client.databases.create(
         **{
             "parent": { "page_id": new_page['id'] },
+            "is_inline": True,
             "title": [
                 {
                     "text": {
