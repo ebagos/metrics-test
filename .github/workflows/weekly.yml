@@ -27,12 +27,12 @@ jobs:
           TZ: "UTC" # タイムゾーンを指定
         id: date
         #run: echo "::set-output name=date::$(date +'%Y-%m-%d %H:%M:%S')"
-        run: echo "date=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+        run: echo "date=$(date +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
       # '%Y-%m-%d %H:%M'の部分を書き換えれば、任意の表示に変更できる。
 
       - name: Get previous week
         id: weekly
-        uses: ./.github/actions/localdate
+        uses: ./.github/actions/last_month_week_in_local
         env:
           TYPE: 'week'
           UTC: ${{ steps.date.outputs.date }}
