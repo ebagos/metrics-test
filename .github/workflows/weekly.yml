@@ -32,7 +32,7 @@ jobs:
 
       - name: Get previous week
         id: weekly
-        uses: ./.github/actions/last_month_week_in_local
+        uses: ./.github/actions/localdate
         env:
           TYPE: 'week'
           UTC: ${{ steps.date.outputs.date }}
