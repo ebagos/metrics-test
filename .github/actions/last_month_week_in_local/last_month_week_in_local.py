@@ -22,8 +22,12 @@ def main():
     local = utc.astimezone(tz_local)
     # typeがweekの場合、先週の日曜日の00:00:00をfirstに設定し、先週の土曜日の23:59:59をlastに設定する
     if type == 'week':
-        first = local - timedelta(days=7) - timedelta(days=local.weekday()+int(weekday))
+        first = local - timedelta(7 + local.isoweekday() % 7)
+        if weekday != '7':
+            first = first + timedelta(days=int(weekday))
+        first = datetime(year=first.year, month=first.month, day=first.day, hour=0, minute=0, second=0, tzinfo=tz_local)
         last = first + timedelta(days=6)
+        last = datetime(year=last.year, month=last.month, day=last.day, hour=23, minute=59, second=59, tzinfo=tz_local)
     # typeがmonthの場合、先月の1日の00:00:00をfirstに設定し、先月の最終日の23:59:59をlastに設定する
     elif type == 'month':
         # 1ヶ月前の1日を取得
