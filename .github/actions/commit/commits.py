@@ -6,12 +6,20 @@ import pandas as pd
 import requests
 import json
 from notion_client import Client
+import zoneinfo
+from dateutil.tz import gettz
 
 # --------------------------------------------
 def github_commit_data():
     # 環境変数の取得
+    tz = gettz('Asia/Tokyo')
     start_date = datetime.strptime(os.getenv("FROM_DATE"), '%Y-%m-%dT%H:%M:%SZ')
+    start_date = start_date.astimezone(tz=tz)
+    start_date = datetime(year=start_date.year, month=start_date.month, day=start_date.day, tzinfo=tz)
+    print(start_date)
     end_date = datetime.strptime(os.getenv("TO_DATE"), '%Y-%m-%dT%H:%M:%SZ')
+    end_date = end_date.astimezone(tz=tz)
+    print(end_date)
     token = os.getenv('ACCESS_TOKEN')
     owner = os.getenv('REPO_OWNER')
     repo_name = os.getenv('REPO_NAME')
@@ -33,6 +41,7 @@ def github_commit_data():
         branch_name = branch.name
 
         # Get commits for the branch within the specified time period
+        # 現時点でページング処理を行っていないため、100件以上のコミットがある場合は取得できない
         branch_commits = repo.get_commits(since=start_date, until=end_date, sha=branch.commit.sha)
 
         # Store the commits in the dictionary
