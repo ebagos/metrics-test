@@ -10,8 +10,8 @@ from notion_client import Client
 # --------------------------------------------
 def github_commit_data():
     # 環境変数の取得
-    start_date = datetime.strptime(os.getenv("FROM_DATE"), '%Y-%m-%d')
-    end_date = datetime.strptime(os.getenv("TO_DATE"), '%Y-%m-%d')
+    start_date = datetime.strptime(os.getenv("FROM_DATE"), '%Y-%m-%dT%H:%M:%SZ')
+    end_date = datetime.strptime(os.getenv("TO_DATE"), '%Y-%m-%dT%H:%M:%SZ')
     token = os.getenv('ACCESS_TOKEN')
     owner = os.getenv('REPO_OWNER')
     repo_name = os.getenv('REPO_NAME')
