@@ -12,14 +12,14 @@ from dateutil.tz import gettz
 # --------------------------------------------
 def github_commit_data():
     # 環境変数の取得
-    tz = gettz('Asia/Tokyo')
+    tzone = gettz(os.getenv('TIMEZONE'))
+
     start_date = datetime.strptime(os.getenv("FROM_DATE"), '%Y-%m-%dT%H:%M:%SZ')
-    start_date = start_date.astimezone(tz=tz)
-    start_date = datetime(year=start_date.year, month=start_date.month, day=start_date.day, tzinfo=tz)
-    print(start_date)
+    start_date = start_date.astimezone(tz=tzone)
+    
     end_date = datetime.strptime(os.getenv("TO_DATE"), '%Y-%m-%dT%H:%M:%SZ')
-    end_date = end_date.astimezone(tz=tz)
-    print(end_date)
+    end_date = end_date.astimezone(tz=tzone)
+
     token = os.getenv('ACCESS_TOKEN')
     owner = os.getenv('REPO_OWNER')
     repo_name = os.getenv('REPO_NAME')
@@ -42,7 +42,7 @@ def github_commit_data():
 
         # Get commits for the branch within the specified time period
         # 現時点でページング処理を行っていないため、100件以上のコミットがある場合は取得できない
-        branch_commits = repo.get_commits(since=start_date, until=end_date, sha=branch.commit.sha)
+        branch_commits = repo.get_commits(since=start_date, until=end_date, sha=branch.commit.sha, )
 
         # Store the commits in the dictionary
         commits[branch_name] = branch_commits
@@ -69,7 +69,11 @@ def github_commit_data():
                 # Store the commit data in the dictionary
                 commit_data['sha'].append(commit.sha)
                 commit_data['author'].append(commit.author.login)
-                commit_data['date'].append(commit.commit.author.date)
+                # 日付だけのデータにする
+#                d = commit.commit.author.date.strftime('%Y-%m-%d')
+                day = datetime.strptime(commit.commit.author.date.strftime('%Y-%m-%d'), '%Y-%m-%d')
+                commit_data['date'].append(day)
+#                commit_data['date'].append(commit.commit.author.date.strftime('%Y-%m-%d'))
                 commit_data['message'].append(commit.commit.message)
                 commit_data['url'].append(commit.html_url)
                 commit_data['branch'].append(branch)
@@ -77,15 +81,14 @@ def github_commit_data():
     # --------------------------------------------
     # Create a Pandas DataFrame from the dictionary
     df = pd.DataFrame.from_dict(commit_data)
-
-    # Convert the date column to a datetime object
-    df['date'] = pd.to_datetime(df['date'])
-
-    # 日付でグループ化し、authorごとの数を集計
+    
+    # 時刻を丸めて日付でグループ化し、authorごとの数を集計
     data_count = df.groupby([df['date'].dt.date, 'author']).size().unstack(fill_value=0)
 
-    # 全日付についてデータフレームを再構築
-    data_count = data_count.reindex(pd.date_range(start=start_date, end=end_date), fill_value=0)
+    # 前日付についてデータフレームを再構築
+    sd = start_date.strftime('%Y-%m-%d')
+    ed = end_date.strftime('%Y-%m-%d')
+    data_count = data_count.reindex(pd.date_range(start=sd, end=ed), fill_value=0)
 
     return data_count
 
@@ -150,7 +153,7 @@ def main():
     load_dotenv()
     df = github_commit_data()
     print(df)
-    send_df_to_notion(df)
+#    send_df_to_notion(df)
 
 if __name__ == "__main__":
     main()
