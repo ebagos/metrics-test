@@ -82,9 +82,13 @@ def github_commit_data():
     # Create a Pandas DataFrame from the dictionary
     df = pd.DataFrame.from_dict(commit_data)
     
-    # 時刻を丸めて日付でグループ化し、authorごとの数を集計
-    data_count = df.groupby([df['date'].dt.date, 'author']).size().unstack(fill_value=0)
-
+    if df.size == 0:
+#        sd = start_date.strftime('%Y-%m-%d')
+        data_count = pd.DataFrame({'author': [0]})
+    else:
+        # 時刻を丸めて日付でグループ化し、authorごとの数を集計
+        data_count = df.groupby([df['date'].dt.date, 'author']).size().unstack(fill_value=0)
+    
     # 前日付についてデータフレームを再構築
     sd = start_date.strftime('%Y-%m-%d')
     ed = end_date.strftime('%Y-%m-%d')
@@ -153,7 +157,7 @@ def main():
     load_dotenv()
     df = github_commit_data()
     print(df)
-#    send_df_to_notion(df)
+    send_df_to_notion(df)
 
 if __name__ == "__main__":
     main()
