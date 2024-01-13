@@ -69,7 +69,7 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
-      - name upload issue-metrics-created
+      - name: upload issue-metrics-created
         uses: actions/upload-artifact@v4
         with:
           name: issue-metrics
