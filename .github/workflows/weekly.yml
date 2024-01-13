@@ -70,7 +70,7 @@ jobs:
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
       - name upload issue-metrics-created
-        uses: actions/upload
+        uses: actions/upload-artifact@v4
         with:
           name: issue-metrics
           file: issue_metrics.md
