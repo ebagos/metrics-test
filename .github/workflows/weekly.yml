@@ -69,11 +69,13 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
-      - name: upload issue-metrics-created
-        uses: actions/upload-artifact@v4
-        with:
-          name: issue-metrics
-          path: issue_metrics.md
+      - name: erase issues
+        uses: ./.github/actions/cutter
+        env:
+          INPUT_FILE: issue_metrics.md
+          OUTPUT_FILE: issue_metrics.md
+          START_BLANK_LINE: 3
+          END_BLANK_LINE: 4
 
       - name: markdown to notion - 1
         uses: ./.github/actions/notion
@@ -92,6 +94,14 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
+      - name: erase prs
+        uses: ./.github/actions/cutter
+        env:
+          INPUT_FILE: issue_metrics.md
+          OUTPUT_FILE: issue_metrics.md
+          START_BLANK_LINE: 3
+          END_BLANK_LINE: 4
+  
       - name: markdown to notion - 2
         uses: ./.github/actions/notion
         env:
@@ -109,6 +119,14 @@ jobs:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
 
+      - name: erase issues
+        uses: ./.github/actions/cutter
+        env:
+          INPUT_FILE: issue_metrics.md
+          OUTPUT_FILE: issue_metrics.md
+          START_BLANK_LINE: 3
+          END_BLANK_LINE: 4  
+  
       - name: markdown to notion - 3
         uses: ./.github/actions/notion
         env:
@@ -125,7 +143,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:pr closed:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
-  
+
+      - name: erase prs
+        uses: ./.github/actions/cutter
+        env:
+          INPUT_FILE: issue_metrics.md
+          OUTPUT_FILE: issue_metrics.md
+          START_BLANK_LINE: 3
+          END_BLANK_LINE: 4
+
       - name: markdown to notion - 4
         uses: ./.github/actions/notion
         env:
