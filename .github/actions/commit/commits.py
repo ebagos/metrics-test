@@ -68,12 +68,17 @@ def github_commit_data():
                 duplicates[commit.sha] = True
                 # Store the commit data in the dictionary
                 commit_data['sha'].append(commit.sha)
-                commit_data['author'].append(commit.author.login)
-                # 日付だけのデータにする
-#                d = commit.commit.author.date.strftime('%Y-%m-%d')
-                day = datetime.strptime(commit.commit.author.date.strftime('%Y-%m-%d'), '%Y-%m-%d')
-                commit_data['date'].append(day)
-#                commit_data['date'].append(commit.commit.author.date.strftime('%Y-%m-%d'))
+                # authorやcommitterがない場合がある
+                if commit.author == None:
+                    commit_data['author'].append(commit.sha)
+                    # 日付だけのデータにする
+                    day = datetime.strptime(end_date.strftime('%Y-%m-%d'), '%Y-%m-%d')
+                    commit_data['date'].append(day)
+                else:
+                    commit_data['author'].append(commit.author.login)
+                    # 日付だけのデータにする
+                    day = datetime.strptime(commit.commit.author.date.strftime('%Y-%m-%d'), '%Y-%m-%d')
+                    commit_data['date'].append(day)
                 commit_data['message'].append(commit.commit.message)
                 commit_data['url'].append(commit.html_url)
                 commit_data['branch'].append(branch)
@@ -83,12 +88,11 @@ def github_commit_data():
     df = pd.DataFrame.from_dict(commit_data)
     
     if df.size == 0:
-#        sd = start_date.strftime('%Y-%m-%d')
         data_count = pd.DataFrame({'author': [0]})
     else:
         # 時刻を丸めて日付でグループ化し、authorごとの数を集計
         data_count = df.groupby([df['date'].dt.date, 'author']).size().unstack(fill_value=0)
-    
+
     # 前日付についてデータフレームを再構築
     sd = start_date.strftime('%Y-%m-%d')
     ed = end_date.strftime('%Y-%m-%d')
@@ -156,7 +160,6 @@ def send_df_to_notion(df):
 def main():
     load_dotenv()
     df = github_commit_data()
-    print(df)
     send_df_to_notion(df)
 
 if __name__ == "__main__":

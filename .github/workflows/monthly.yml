@@ -12,15 +12,15 @@ jobs:
   metrics_matrix:
     strategy:
       matrix:
-        repo: ['metrics-test']
-        owner: ['ebagos']
+        repo: ['metrics-test', 'infomart-admin']
+        owner: ['b2bplatform']
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
-          repository: ebagos/metrics-test
+          repository: b2bplatform/metrics-test
 
       - name: Get current date and time
         env: 
@@ -30,7 +30,7 @@ jobs:
         run: echo "date=$(date +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
       # '%Y-%m-%d %H:%M'の部分を書き換えれば、任意の表示に変更できる。
 
-      - name: Get previous week
+      - name: Get previous month
         id: monthly
         uses: ./.github/actions/localdate
         env:
@@ -46,7 +46,7 @@ jobs:
         id: entry
         env:
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
-          NOTION_DATABASE_ID: 3d1e60c6207241b09c1aae48750f0833
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           TITLE: '${{ matrix.repo }} montly metrics'
 
       - name: make commit page
@@ -60,6 +60,7 @@ jobs:
           REPO_OWNER: ${{ matrix.owner }}
           REPO_NAME: ${{ matrix.repo }}
           TITLE: '${{ matrix.repo }} commits'
+          TIMEZONE: 'Asia/Tokyo'
   
       - name: Run issue-metrics tool for issues opened in a specific period
         id: issue-metrics-created
