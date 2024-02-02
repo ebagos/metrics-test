@@ -1,4 +1,4 @@
-name: test workflow for the issue metrics
+name: test private container action
 on:
   workflow_dispatch:
 
@@ -14,6 +14,13 @@ jobs:
         owner: ['b2bplatform']
     runs-on: ubuntu-latest
     steps:
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: checkout
         uses: actions/checkout@v4
         with:
@@ -77,13 +84,13 @@ jobs:
           START_BLANK_LINE: 3
           END_BLANK_LINE: 4
 
-      - name: markdown to notion - 1
-        uses: ./.github/actions/notion
-        env:
-          REPO_OWNER: ${{ matrix.owner }}
-          REPO_NAME: ${{ matrix.repo }}
-          NOTION_KEY: ${{ secrets.NOTION_KEY }}
-          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
-          MARKDOWN_FILENAME: issue_metrics.md
-          TITLE: '${{ matrix.repo }}: issue created'
-          TAGS: issue,created
+#      - name: markdown to notion - 1
+#        uses: ghcr.io/ebagos/matrics-test/notion:latest
+#        env:
+#          REPO_OWNER: ${{ matrix.owner }}
+#          REPO_NAME: ${{ matrix.repo }}
+#          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+#          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+#          MARKDOWN_FILENAME: issue_metrics.md
+#          TITLE: '${{ matrix.repo }}: issue created'
+#          TAGS: issue,created
