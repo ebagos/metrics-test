@@ -1,9 +1,0 @@
-name: 'create_database_entry'
-description: 'Create a database entry'
-outputs:
-  database_id:
-    description: 'The ID of the created entry'
-    #value: ${{ steps.create_entry.outputs.id }}
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
