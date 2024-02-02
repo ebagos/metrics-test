@@ -43,7 +43,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v4
         with:
-          context: ${{ matrics.folder }}
+          context: ${{ matrix.folder }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: |
             ghcr.io/${{ github.repository }}/${{ matrix.folder }}:${{ github.sha }}

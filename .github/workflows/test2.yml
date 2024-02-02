@@ -84,13 +84,13 @@ jobs:
           START_BLANK_LINE: 3
           END_BLANK_LINE: 4
 
-      - name: markdown to notion - 1
-        uses: ghcr.io/ebagos/matrics-test/notion:latest
-        env:
-          REPO_OWNER: ${{ matrix.owner }}
-          REPO_NAME: ${{ matrix.repo }}
-          NOTION_KEY: ${{ secrets.NOTION_KEY }}
-          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
-          MARKDOWN_FILENAME: issue_metrics.md
-          TITLE: '${{ matrix.repo }}: issue created'
-          TAGS: issue,created
+#      - name: markdown to notion - 1
+#        uses: ghcr.io/ebagos/matrics-test/notion:latest
+#        env:
+#          REPO_OWNER: ${{ matrix.owner }}
+#          REPO_NAME: ${{ matrix.repo }}
+#          NOTION_KEY: ${{ secrets.NOTION_KEY }}
+#          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
+#          MARKDOWN_FILENAME: issue_metrics.md
+#          TITLE: '${{ matrix.repo }}: issue created'
+#          TAGS: issue,created
