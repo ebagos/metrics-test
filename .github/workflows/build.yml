@@ -12,7 +12,7 @@ jobs:
   build_and_push:
     strategy:
       matrix:
-        folder: [notion]
+        folder: [commits]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
