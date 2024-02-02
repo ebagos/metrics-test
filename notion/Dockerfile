@@ -1,0 +1,15 @@
+FROM node:iron
+
+#ENV REPO_OWNER
+#ENV REPO_NAME
+#ENV NOTION_KEY
+#ENV NOTION_DATABASE_ID
+#ENV MARKDOWN_FILENAME
+#ENV TITLE
+#ENV TAGS
+
+WORKDIR /app
+COPY . /app
+RUN npm install --omit=dev
+
+CMD ["node", "index.js"]
