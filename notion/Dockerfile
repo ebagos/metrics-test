@@ -10,6 +10,5 @@ FROM node:iron
 
 WORKDIR /app
 COPY . /app
-RUN npm install --omit=dev
 
-CMD ["node", "index.js"]
+CMD ["/app/exec.sh"]
