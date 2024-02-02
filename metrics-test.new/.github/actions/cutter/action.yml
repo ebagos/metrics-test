@@ -1,0 +1,5 @@
+name: 'cutter'
+description: 'Erase lines between specified blank lines from a text file'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

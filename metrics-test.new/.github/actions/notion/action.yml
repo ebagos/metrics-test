@@ -1,0 +1,5 @@
+name: 'Send to Notion'
+description: 'Send a markdown to Notion'
+runs:
+  using: 'node20'
+  main: 'index.js'
