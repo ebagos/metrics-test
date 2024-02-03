@@ -10,8 +10,8 @@ jobs:
   metrics_matrix:
     strategy:
       matrix:
-        repo: ['metrics-test', 'infomart-admin']
-        owner: ['b2bplatform']
+        repo: ['metrics-test']
+        owner: ['ebagos']
     runs-on: ubuntu-latest
     steps:
       - name: Login to Github Container Registry
