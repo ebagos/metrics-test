@@ -55,7 +55,7 @@ jobs:
       - name: make commit page
         run: |
           docker run \
-          -e ACCESS_TOKEN=${{ secrets.MY_ACCESS_TOKEN }} \
+          -e GITUHB_TOKEN=${{ secrets.MY_ACCESS_TOKEN }} \
           -e NOTION_KEY=${{ secrets.NOTION_KEY }} \
           -e NOTION_DATABASE_ID=${{ steps.entry.outputs.database_id }} \
           -e SINCE=${{ steps.weekly.outputs.first }} \
