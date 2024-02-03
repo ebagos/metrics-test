@@ -6,7 +6,7 @@ RUN go build -ldflags="-s -w" -trimpath -o /app/main
 
 FROM debian:bookworm
 
-WORKDIR /app
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/main /app/main
 
 CMD ["/app/main"]
