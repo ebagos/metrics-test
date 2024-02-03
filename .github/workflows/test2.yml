@@ -54,16 +54,26 @@ jobs:
 
       - name: make commit page
         run: |
-          docker run -e ACCESS_TOKEN -e NOTION_KEY -e NOTION_DATABASE_ID \
-          -e FROM_DATE -e TO_DATE -e REPO_OWNER -e REPO_NAME ghcr.io/ebagos/metrics-test/commits
+          docker run \
+          -e ACCESS_TOKEN=${{ secrets.MY_ACCESS_TOKEN }} \
+          -e NOTION_KEY=${{ secrets.NOTION_KEY }} \
+          -e NOTION_DATABASE_ID=${{ steps.entry.outputs.database_id }} \
+          -e SINCE=${{ steps.weekly.outputs.first }} \
+          -e UNTIL=${{ steps.weekly.outputs.last }} \
+          -e REPO_OWNER=${{ matrix.owner }} \
+          -e REPO_NAME=${{ matrix.repo }} \
+          -e TITLE='${{ matrix.repo }} commits' \
+          -e LOCATION='Aisa/Tokyo' \
+          --rm \
+          ghcr.io/ebagos/metrics-test/commits
         env:
-          ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          NOTION_KEY: ${{ secrets.NOTION_KEY }}
-          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
-          FROM_DATE: ${{ steps.weekly.outputs.first }}
-          TO_DATE: ${{ steps.weekly.outputs.last }}
-          REPO_OWNER: ${{ matrix.owner }}
-          REPO_NAME: ${{ matrix.repo }}
+          ACCESS_TOKEN:
+          NOTION_KEY: 
+          NOTION_DATABASE_ID: 
+          FROM_DATE: 
+          TO_DATE: 
+          REPO_OWNER: 
+          REPO_NAME: 
           TITLE: '${{ matrix.repo }} commits'
           TIMEZONE: 'Asia/Tokyo'
   
