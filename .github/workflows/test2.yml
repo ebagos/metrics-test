@@ -53,7 +53,9 @@ jobs:
           TITLE: '${{ matrix.repo }} weekly metrics'
 
       - name: make commit page
-        uses: ghcr.io/ebagos/metrics-test/commits:latest
+        run: |
+          docker run -e ACCESS_TOKEN -e NOTION_KEY -e NOTION_DATABASE_ID \
+          -e FROM_DATE -e TO_DATE -e REPO_OWNER -e REPO_NAME ghcr.io/ebagos/metrics-test/commits
         env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
