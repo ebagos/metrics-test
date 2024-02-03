@@ -66,14 +66,4 @@ jobs:
           -e LOCATION='Aisa/Tokyo' \
           --rm \
           ghcr.io/ebagos/metrics-test/commits
-        env:
-          ACCESS_TOKEN:
-          NOTION_KEY: 
-          NOTION_DATABASE_ID: 
-          FROM_DATE: 
-          TO_DATE: 
-          REPO_OWNER: 
-          REPO_NAME: 
-          TITLE: '${{ matrix.repo }} commits'
-          TIMEZONE: 'Asia/Tokyo'
   
