@@ -53,7 +53,7 @@ jobs:
           TITLE: '${{ matrix.repo }} weekly metrics'
 
       - name: make commit page
-        uses: ghcr.ioebagos/metrics-test/commits:latest
+        uses: ghcr.io/ebagos/metrics-test/commits:latest
         env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
