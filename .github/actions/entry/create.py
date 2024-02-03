@@ -17,7 +17,7 @@ def create_db_entry():
         **{
             "parent": { "database_id": db_id },
             "properties": {
-                "名前": {
+                "Name": {
                     "title": [
                         {
                             "text": {
