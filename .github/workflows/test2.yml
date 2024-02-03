@@ -44,20 +44,16 @@ jobs:
           WEEKDAY: '0'
           TIMEZONE: 'Asia/Tokyo'
 
-      - name: Output from date test
-        run: echo "${{ steps.weekly.outputs.first }}"
-
       - name: create notion entry
         uses: ./.github/actions/entry
         id: entry
         env:
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
-#          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           TITLE: '${{ matrix.repo }} weekly metrics'
 
       - name: make commit page
-        uses: ./.github/actions/commit
+        uses: ghcr.io/metrics-test/commits:latest
         env:
           ACCESS_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
           NOTION_KEY: ${{ secrets.NOTION_KEY }}
@@ -69,28 +65,3 @@ jobs:
           TITLE: '${{ matrix.repo }} commits'
           TIMEZONE: 'Asia/Tokyo'
   
-      - name: Run issue-metrics tool for issues opened in a specific period
-        id: issue-metrics-created
-        uses: github/issue-metrics@v2
-        env:
-          GH_TOKEN: ${{ secrets.MY_ACCESS_TOKEN }}
-          SEARCH_QUERY: 'repo:${{ matrix.owner }}/${{ matrix.repo }} is:issue created:${{ steps.weekly.outputs.first }}..${{ steps.weekly.outputs.last }}'
-
-      - name: erase issues
-        uses: ./.github/actions/cutter
-        env:
-          INPUT_FILE: issue_metrics.md
-          OUTPUT_FILE: issue_metrics.md
-          START_BLANK_LINE: 3
-          END_BLANK_LINE: 4
-
-#      - name: markdown to notion - 1
-#        uses: ghcr.io/ebagos/matrics-test/notion:latest
-#        env:
-#          REPO_OWNER: ${{ matrix.owner }}
-#          REPO_NAME: ${{ matrix.repo }}
-#          NOTION_KEY: ${{ secrets.NOTION_KEY }}
-#          NOTION_DATABASE_ID: ${{ steps.entry.outputs.database_id }}
-#          MARKDOWN_FILENAME: issue_metrics.md
-#          TITLE: '${{ matrix.repo }}: issue created'
-#          TAGS: issue,created
