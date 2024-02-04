@@ -13,14 +13,14 @@ jobs:
     strategy:
       matrix:
         repo: ['metrics-test', 'infomart-admin']
-        owner: ['b2bplatform']
+        owner: ['ebagos']
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
-          repository: b2bplatform/metrics-test
+          repository: ebagos/metrics-test
           ref: main
 
       - name: Get current date and time
