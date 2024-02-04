@@ -21,6 +21,7 @@ jobs:
         with:
           token: ${{ secrets.MY_ACCESS_TOKEN }}
           repository: b2bplatform/metrics-test
+          ref: main
 
       - name: Get current date and time
         env: 
